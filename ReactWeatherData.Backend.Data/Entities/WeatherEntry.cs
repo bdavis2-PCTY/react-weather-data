@@ -1,12 +1,9 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ReactWeatherData.App.Web.DB
+namespace ReactWeatherData.Backend.Data.Entites
 {
-    public class Weather
+    public class WeatherEntry
     {
         [BsonId]
         public Guid Id { get; set; }

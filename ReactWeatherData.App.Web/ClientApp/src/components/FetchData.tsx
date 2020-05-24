@@ -4,6 +4,7 @@ interface IState {
     isError: boolean;
     forecasts: any[],
     isLoading: boolean;
+    isDataModifying: boolean;
 }
 
 export class FetchData extends Component<{}, IState> {
@@ -11,7 +12,7 @@ export class FetchData extends Component<{}, IState> {
 
     constructor(props: any) {
         super(props);
-        this.state = { forecasts: [], isLoading: true, isError: false };
+        this.state = { forecasts: [], isLoading: true, isError: false, isDataModifying: false };
     }
 
     componentDidMount() {
@@ -20,11 +21,16 @@ export class FetchData extends Component<{}, IState> {
 
     renderForecastsTable(forecasts: any[]) {
 
-        const items = forecasts.map(forecast => {
-            return <p>{forecast.date}</p>;
-        });
+        let item = null;
+        if (forecasts.length > 0) {
+            item = forecasts.map(forecast => {
+                return <p>{forecast.date}</p>;
+            });
+        } else {
+            item = (<strong>No items found</strong>);
+        }
 
-        return items;
+        return item;
     }
 
     render() {
@@ -38,10 +44,45 @@ export class FetchData extends Component<{}, IState> {
                 : this.renderForecastsTable(this.state.forecasts);
         }
 
-        const addWeather = async() => {
-            await fetch('/WeatherForecast/AddRandomWeather');
+        const addWeatherHandle = async () => {
+            let data = Object.assign({}, this.state) as any;
+            try {
+                data.isDataModifying = true;
+                this.setState(data);
+
+                await fetch('/WeatherForecast/AddRandomWeather');
+            } finally {
+                data.isDataModifying = false;
+                this.setState(data);
+            }
             await this.populateWeatherData();
         };
+
+        const deleteAllWeatherHandle = async () => {
+            let data = Object.assign({}, this.state) as any;
+            try {
+                data.isDataModifying = true;
+                this.setState(data);
+
+                await fetch('/WeatherForecast/DeleteAllWeather');
+            } finally {
+                data.isDataModifying = false;
+                this.setState(data);
+            }
+            await this.populateWeatherData();
+        };
+
+        let buttons = (<div>
+            <button onClick={addWeatherHandle}>Add Random Weather</button>
+            <button onClick={deleteAllWeatherHandle}>Delete All Weather Data</button>
+        </div>);
+
+        if (this.state.isDataModifying) {
+            buttons = (<div>
+                <button onClick={addWeatherHandle} disabled>Add Random Weather</button>
+                <button onClick={deleteAllWeatherHandle} disabled>Delete All Weather Data</button>
+            </div>);
+        }
 
         return (
             <div>
@@ -49,7 +90,7 @@ export class FetchData extends Component<{}, IState> {
                 <p>This component demonstrates fetching data from the server.</p>
                 {contents}
 
-                <button onClick={addWeather}>Add Random Weather</button>
+                {buttons}
             </div>
         );
     }

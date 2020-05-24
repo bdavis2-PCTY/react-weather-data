@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using ReactWeatherData.App.Web.Model;
 
-namespace ReactWeatherData.App.Web.Data
+namespace ReactWeatherData.Backend.Data.Repository
 {
-    public abstract class ContextBase
+    internal abstract class RepositoryBase
     {
         protected IMongoDatabase database { get; }
 
-        public ContextBase(IOptions<Settings> pSettings)
+        public RepositoryBase(IOptions<Settings> pSettings)
         {
             MongoClient dbClient = new MongoClient(pSettings.Value.ConnectionString);
             if (dbClient != null)

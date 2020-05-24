@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using ReactWeatherData.Backend.Data.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MongoDB.Bson.IO;
-using ReactWeatherData.App.Web.Repository;
 
 namespace ReactWeatherData.App.Web.Controllers
 {
@@ -31,23 +30,8 @@ namespace ReactWeatherData.App.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<WeatherForecast>> GetWeatherForecast()
         {
-
-            var weather = await _weatherRepo.GetWeather();
+            var weather = _weatherRepo.GetWeather();
             List<WeatherForecast> weatherItems = new List<WeatherForecast>();
-
-            // Add dummy weather
-            var rng = new Random();
-            for (int i = 0; i < 5; i++)
-            {
-                WeatherForecast dummyWeather = new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(i),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                };
-
-                weatherItems.Add(dummyWeather);
-            }
 
             // Add real data
             weatherItems.AddRange(weather.Select(x => new WeatherForecast()
@@ -63,7 +47,7 @@ namespace ReactWeatherData.App.Web.Controllers
         [HttpGet]
         public async Task AddRandomWeather()
         {
-            DB.Weather weather = new DB.Weather()
+            Backend.Data.Entites.WeatherEntry weather = new Backend.Data.Entites.WeatherEntry()
             {
                 Summary = $"Randomly generated at {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}",
                 TargetDateTime = DateTime.Today,
@@ -71,6 +55,12 @@ namespace ReactWeatherData.App.Web.Controllers
             };
 
             await _weatherRepo.AddWeather(weather);
+        }
+
+        [HttpGet]
+        public async Task DeleteAllWeather()
+        {
+            await _weatherRepo.DeleteAllWeather();
         }
     }
 }

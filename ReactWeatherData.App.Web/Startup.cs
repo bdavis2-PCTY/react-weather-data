@@ -4,23 +4,23 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ReactWeatherData.App.Web.Repository;
 
 namespace ReactWeatherData.App.Web
 {
     public class Startup
     {
+        private IConfiguration configuration { get; }
+        private Backend.Data.Startup backendDataServiceStartup { get; }
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
+            backendDataServiceStartup = new Backend.Data.Startup(configuration);
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
@@ -29,14 +29,7 @@ namespace ReactWeatherData.App.Web
                 configuration.RootPath = "ClientApp/build";
             });
 
-            // Configure Mongo
-            services.Configure<Model.Settings>(options =>
-            {
-                options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
-                options.Database = Configuration.GetSection("MongoConnection:Database").Value;
-            });
-
-            services.AddTransient<IWeatherRepository, WeatherRepository > ();
+            backendDataServiceStartup.ConfigureServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
