@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace SyncFusionReactJS.App.Web
+namespace ReactWeatherData.App.Web
 {
     public class Startup
     {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace SyncFusionReactJS.App.Web
+namespace ReactWeatherData.App.Web
 {
     public class Program
     {

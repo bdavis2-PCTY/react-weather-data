@@ -1,6 +1,6 @@
 using System;
 
-namespace SyncFusionReactJS.App.Web
+namespace ReactWeatherData.App.Web
 {
     public class WeatherForecast
     {

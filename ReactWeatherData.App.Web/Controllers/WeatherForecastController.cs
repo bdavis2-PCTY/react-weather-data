@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace SyncFusionReactJS.App.Web.Controllers
+namespace ReactWeatherData.App.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
