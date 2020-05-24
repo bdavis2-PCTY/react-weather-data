@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReactWeatherData.App.Web.Repository;
 
 namespace ReactWeatherData.App.Web
 {
@@ -27,6 +28,15 @@ namespace ReactWeatherData.App.Web
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            // Configure Mongo
+            services.Configure<Model.Settings>(options =>
+            {
+                options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
+                options.Database = Configuration.GetSection("MongoConnection:Database").Value;
+            });
+
+            services.AddTransient<IWeatherRepository, WeatherRepository > ();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Moment from 'react-moment';
-import moment from 'moment';
 
 interface IState {
     isError: boolean;
@@ -20,13 +18,13 @@ export class FetchData extends Component<{}, IState> {
         this.populateWeatherData();
     }
 
-    static renderForecastsTable(forecasts: any) {
-        const dateFormatter = (colum: any, data: any) => {
-            return moment(data.date).format('M/D/YYYY h A');
-        };
+    renderForecastsTable(forecasts: any[]) {
 
-        return (<p></p>
-        );
+        const items = forecasts.map(forecast => {
+            return <p>{forecast.date}</p>;
+        });
+
+        return items;
     }
 
     render() {
@@ -37,14 +35,21 @@ export class FetchData extends Component<{}, IState> {
         } else {
             contents = this.state.isLoading
                 ? <p><em>Loading...</em></p>
-                : FetchData.renderForecastsTable(this.state.forecasts);
+                : this.renderForecastsTable(this.state.forecasts);
         }
+
+        const addWeather = async() => {
+            await fetch('/WeatherForecast/AddRandomWeather');
+            await this.populateWeatherData();
+        };
 
         return (
             <div>
                 <h1 id="tabelLabel" >Weather forecast</h1>
                 <p>This component demonstrates fetching data from the server.</p>
                 {contents}
+
+                <button onClick={addWeather}>Add Random Weather</button>
             </div>
         );
     }
@@ -52,8 +57,15 @@ export class FetchData extends Component<{}, IState> {
     async populateWeatherData() {
         let data = Object.assign({}, this.state) as any;
 
+        // Clear current stuff
+        data.isError = false;
+        data.isLoading = true;
+        data.forecasts = [];
+        this.setState(data);
+
+        // Get data from server
         try {
-            const response = await fetch('/WeatherForecast');
+            const response = await fetch('/WeatherForecast/GetWeatherForecast');
             data.forecasts = await response.json();
             data.isError = false;
         } catch (e) {
